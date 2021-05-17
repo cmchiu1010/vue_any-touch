@@ -2,7 +2,7 @@
  * @Author: mike.chiu
  * @Date: 2021-05-15 09:31:39
  * @LastEditors: mike.chiu
- * @LastEditTime: 2021-05-17 13:25:41
+ * @LastEditTime: 2021-05-17 15:38:29
  * @Description: 
 -->
 <template>
@@ -112,7 +112,7 @@ export default {
     }
   },
   mounted () {
-    const at = new AnyTouch(this.$el);
+    const at = new AnyTouch(this.$refs.panel, { preventDefault: true });
     this.$on('hook:destroyed', () => { at.destroy() });
   },
   methods: {
