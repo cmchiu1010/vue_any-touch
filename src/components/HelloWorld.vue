@@ -2,7 +2,7 @@
  * @Author: mike.chiu
  * @Date: 2021-05-15 09:31:39
  * @LastEditors: mike.chiu
- * @LastEditTime: 2021-05-16 06:50:31
+ * @LastEditTime: 2021-05-17 13:25:41
  * @Description: 
 -->
 <template>
@@ -69,7 +69,13 @@
          @pan="onPan"
          @pinch="onPinch"
          @rotate="onRotate">
-      <div class="p2"></div>
+      <div class="p2"
+           v-for="(card, index) in datas"
+           :key="index"
+           :style="card.bgcolor"
+           v-show="index >= (pageCurrent -1) * pageSize && index < pageCurrent * pageSize">
+        {{ card.label }}, {{ card.value }}, {{ index }}
+      </div>
     </div>
   </div>
 </template>
@@ -88,6 +94,20 @@ export default {
         { left: `50px`, top: `160px`, zIndex: 1, scale: 1, angle: 0 },
         { left: `50px`, top: `320px`, zIndex: 1, scale: 1, angle: 0 },
         { left: `50px`, top: `480px`, zIndex: 1, scale: 1, angle: 0 },
+      ],
+      pIndex: 6,
+      pageCurrent: 1,
+      pageSize: 6,
+      datas: [
+        { label: 'a', value: 1, bgcolor: 'background-color: #ff9' },
+        { label: 'b', value: 2, bgcolor: 'background-color: #ff6' },
+        { label: 'c', value: 3, bgcolor: 'background-color: #ff3' },
+        { label: 'd', value: 4, bgcolor: 'background-color: #f9f' },
+        { label: 'e', value: 5, bgcolor: 'background-color: #f6f' },
+        { label: 'f', value: 6, bgcolor: 'background-color: #f3f' },
+        { label: 'g', value: 7, bgcolor: 'background-color: #9ff' },
+        { label: 'h', value: 8, bgcolor: 'background-color: #6ff' },
+        { label: 'i', value: 9, bgcolor: 'background-color: #3ff' },
       ]
     }
   },
@@ -99,10 +119,23 @@ export default {
     onTap (ev) { // 點擊
       console.log(ev)
     },
-    onSwipe ({ speedX, speedY }, index) { // 划
+    onSwipe ({ speedX, speedY, displacementX }, index) { // 滑動
+      let vm = this
+      if (displacementX > 300) { // 向右滑動
+        if (((vm.pageCurrent - 1) - 1) * vm.pageSize >= 0) {
+          vm.pageCurrent = vm.pageCurrent - 1
+        }
+        console.log(`向右滑動, ${displacementX}`)
+      } else if (displacementX < -300) { // 向左滑動
+        if (((vm.pageCurrent + 1) - 1) * vm.pageSize < vm.datas.length) {
+          vm.pageCurrent = vm.pageCurrent + 1
+        }
+        console.log(`向左滑動, ${displacementX}`)
+      }
+
       this.styles[index].top = Math.round(parseInt(this.styles[index].top) + speedY * 120) + 'px';
       this.styles[index].left = Math.round(parseInt(this.styles[index].left) + speedX * 120) + 'px';
-      console.log(index)
+      console.log(`${index}, ${vm.pIndex}`)
     },
     onPress (ev) { // 按壓
       //   C(ev.type, '#710');
@@ -149,8 +182,8 @@ a {
   background-color: cornsilk;
 }
 .p2 {
-  width: 100px;
+  width: calc(100% / 3);
   height: 30px;
-  background-color: red;
+  float: left;
 }
 </style>
